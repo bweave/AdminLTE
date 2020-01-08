@@ -13,6 +13,25 @@ function padNumber(num) {
     return ("00" + num).substr(-2,2);
 }
 
+// String.prototype.padStart() Polyfill if it's not natively available
+// https://github.com/uxitten/polyfill/blob/master/string.polyfill.js
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/padStart
+if (!String.prototype.padStart) {
+    String.prototype.padStart = function padStart(targetLength, padString) {
+        targetLength = targetLength >> 0; //truncate if number, or convert non-number to 0;
+        padString = String(padString !== undefined ? padString : ' ');
+        if (this.length >= targetLength) {
+            return String(this);
+        } else {
+            targetLength = targetLength - this.length;
+            if (targetLength > padString.length) {
+                padString += padString.repeat(targetLength / padString.length); //append to original to ensure we are longer than needed
+            }
+            return padString.slice(0, targetLength) + String(this);
+        }
+    };
+}
+
 // Helper function needed for converting the Objects to Arrays
 
 function objectToArray(p) {
@@ -232,7 +251,7 @@ function updateQueryTypesPie() {
                 var index = $(this).index();
                 var ci = e.view.queryTypePieChart;
                 var meta = ci.data.datasets[0]._meta;
-                for(let i in meta)
+                for(var i in meta)
                 {
                     if ({}.hasOwnProperty.call(meta, i))
                     {
@@ -416,7 +435,7 @@ function updateForwardDestinationsPie() {
                 var index = $(this).index();
                 var ci = e.view.forwardDestinationPieChart;
                 var meta = ci.data.datasets[0]._meta;
-                for(let i in meta)
+                for(var i in meta)
                 {
                     if ({}.hasOwnProperty.call(meta, i))
                     {
